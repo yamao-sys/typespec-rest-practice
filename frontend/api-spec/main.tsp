@@ -1,3 +1,1 @@
-import "./namespace.tsp";
-import "./routes";
-import "./models";
+import "./sample.tsp";
