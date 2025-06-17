@@ -1,0 +1,38 @@
+name: Lint tsp To OpenAPI Sync
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/api-spec/**/*.tsp'
+      - 'frontend/api-spec/package.json'
+      - 'frontend/api-spec/tspconfig.yaml'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: pnpm i
+
+      - name: Install Typespec dependencies
+        working-directory: ./frontend/api-spec
+        run: npm i
+
+      - name: Run tspcheck
+        working-directory: ./frontend
+        run: pnpm diff:schema:check
