@@ -1,0 +1,62 @@
+name: Frontend Lint
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**/*.js'
+      - 'frontend/**/*.ts'
+      - 'frontend/**/*.tsx'
+      - 'frontend/**/package.json'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: pnpm i
+
+      - name: Generate reviewdog api token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.REVIEDOG_APP_ID }}
+          private_key: ${{ secrets.REVIEDOG_PRIVATE_KEY }}
+
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+
+      - name: Run tsc(type check) with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ steps.generate_token.outputs.token }}
+        working-directory: ./frontend
+        run: pnpm typecheck | reviewdog -reporter=github-pr-review -f=tsc -level=warn -filter-mode=nofilter -fail-level=any
+        shell: bash
+
+      - name: Run prettier
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ steps.generate_token.outputs.token }}
+        working-directory: ./frontend
+        run: pnpm format:check | reviewdog -reporter=github-pr-review -f=eslint -level=warn -filter-mode=nofilter -fail-level=any
+        shell: bash
+
+      - name: Run eslint with reviewdog
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ steps.generate_token.outputs.token }}
+        working-directory: ./frontend
+        run: pnpm lint | reviewdog -reporter=github-pr-review -f=eslint -level=warn -filter-mode=nofilter -fail-level=any
+        shell: bash

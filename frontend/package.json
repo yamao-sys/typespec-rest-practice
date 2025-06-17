@@ -1,0 +1,47 @@
+{
+  "name": "typespec-practice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "dev:test": "NODE_ENV=test next dev --turbopack --port 3100",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
+    "test:e2e": "playwright test",
+    "gen:schema": "cd api-spec && npx tsp compile . && node patch.mjs && cd ..",
+    "gen:schema:watch": "SHELL=/usr/bin/sh chokidar 'api-spec/**/*.tsp' -c 'pnpm gen:schema'",
+    "diff:schema:check": "pnpm gen:schema && git add api-spec/tsp-output/schema/openapi.yaml && git diff --staged --quiet || (echo 'tspとyamlの変更が同期されていません' && exit 1)"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "lodash": "^4.17.21",
+    "next": "15.3.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9.26.0",
+    "@playwright/test": "^1.52.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "chokidar-cli": "^3.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.2",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "js-yaml": "^4.1.0",
+    "prettier": "^3.5.3",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "typescript-eslint": "^8.32.0"
+  }
+}
