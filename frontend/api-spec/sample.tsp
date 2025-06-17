@@ -1,8 +1,7 @@
 import "@typespec/rest";
 import "@typespec/openapi";
 
-@service(#{ title: "Pet Store Service" })
-namespace PetStore;
+namespace TodoService;
 
 using Http;
 using Rest;
