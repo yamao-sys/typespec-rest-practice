@@ -44,6 +44,7 @@ model SubTaskBulkUpdateRequest {
 }
 
 // Todosリソースの基本CRUD + 追加アクション
+@useAuth([SecuritySchema])
 interface Todos extends ResourceOperations<Todo, TodoError> {
   @post
   @route("/todos/bulk-register")
@@ -51,6 +52,7 @@ interface Todos extends ResourceOperations<Todo, TodoError> {
 }
 
 // Todosのサブリソース SubTasksリソースの基本CRUD + 一括更新アクション
+@useAuth([SecuritySchema])
 interface SubTasks extends ResourceOperations<SubTask, TodoError> {
   @patch(#{implicitOptionality: true})
   @route("/todos/{todoId}/sub-tasks")

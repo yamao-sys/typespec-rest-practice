@@ -4,6 +4,52 @@ info:
   version: 0.0.0
 tags: []
 paths:
+  /auth/sign-in:
+    post:
+      operationId: Auth_signIn
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+  /auth/sign-up:
+    post:
+      operationId: Auth_signUp
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthError'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
   /checkups:
     get:
       operationId: Checkups_list
@@ -568,6 +614,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TodoCreate'
+      security:
+        - ApiKeyAuth: []
     get:
       operationId: Todos_list
       description: Lists all instances of the resource.
@@ -585,6 +633,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoError'
+      security:
+        - ApiKeyAuth: []
   /todos/bulk-register:
     post:
       operationId: Todos_bulkRegister
@@ -612,6 +662,8 @@ paths:
               type: array
               items:
                 $ref: '#/components/schemas/Todo'
+      security:
+        - ApiKeyAuth: []
   /todos/{todoId}:
     get:
       operationId: Todos_get
@@ -631,6 +683,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoError'
+      security:
+        - ApiKeyAuth: []
     patch:
       operationId: Todos_update
       description: Updates an existing instance of the resource.
@@ -655,6 +709,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/TodoUpdate'
+      security:
+        - ApiKeyAuth: []
     delete:
       operationId: Todos_delete
       description: Deletes an existing instance of the resource.
@@ -669,6 +725,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoError'
+      security:
+        - ApiKeyAuth: []
   /todos/{todoId}/sub-tasks:
     post:
       operationId: SubTasks_create
@@ -700,6 +758,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SubTaskCreate'
+      security:
+        - ApiKeyAuth: []
     get:
       operationId: SubTasks_list
       description: Lists all instances of the resource.
@@ -718,6 +778,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoError'
+      security:
+        - ApiKeyAuth: []
     patch:
       operationId: SubTasks_bulkUpdate
       parameters:
@@ -748,6 +810,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SubTaskBulkUpdateRequest'
+      security:
+        - ApiKeyAuth: []
   /todos/{todoId}/sub-tasks/{subTaskId}:
     get:
       operationId: SubTasks_get
@@ -768,6 +832,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoError'
+      security:
+        - ApiKeyAuth: []
     patch:
       operationId: SubTasks_update
       description: Updates an existing instance of the resource.
@@ -793,6 +859,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SubTaskUpdate'
+      security:
+        - ApiKeyAuth: []
     delete:
       operationId: SubTasks_delete
       description: Deletes an existing instance of the resource.
@@ -808,6 +876,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoError'
+      security:
+        - ApiKeyAuth: []
 components:
   parameters:
     CheckupKey:
@@ -881,6 +951,26 @@ components:
         type: integer
         format: int32
   schemas:
+    AuthError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    AuthResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
     Checkup:
       type: object
       required:
@@ -1081,6 +1171,32 @@ components:
           type: integer
           format: int64
       description: Resource create or update operation model.
+    SignInRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    SignUpRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+        profileImage:
+          type: string
+          format: binary
+      required:
+        - username
+        - password
+        - email
     SubTask:
       type: object
       required:
@@ -1245,3 +1361,8 @@ components:
           format: uri
           description: The link to the next page of items
       description: Paged response of Toy items
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: cookie
+      name: token
